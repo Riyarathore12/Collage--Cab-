@@ -34,16 +34,23 @@ from flask_mail import Mail, Message
 
 
 app = Flask(__name__)
+basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'collage749@gmail.com' # Aapka email
-app.config['MAIL_PASSWORD'] = 'uewh zbvj rjfr xjsl'    # Google App Password
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+#app.config['MAIL_USERNAME'] = 'collage749@gmail.com' # Aapka email
+#app.config['MAIL_PASSWORD'] = 'uewh zbvj rjfr xjsl'    # Google App Password
 app.config['MAIL_DEFAULT_SENDER'] = 'collage749e@gmail.com'
 mail = Mail(app)
 
 # --- Configuration ---
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+if os.environ.get('VERCEL'):
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/database.db'
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 app.secret_key = "college-van-secret-unique-key"
