@@ -61,6 +61,9 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 db.init_app(app)
 migrate = Migrate(app, db)
 
+with app.app_context():
+    db.create_all()
+
 # --- Initialization Helpers ---
 
 def create_slots():
