@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Van | College Cab</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+        }
+        .location-meta {
+            text-align: center;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <header class="hero mini-hero">
+        <div class="container">
+            <h1>Live Tracking</h1>
+            <p>See the current location of your college van.</p>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        <div class="card">
+            <div id="map"></div>
+            
+            <div class="location-meta">
+                <p>📍 <strong>Last Updated:</strong> {{ time.strftime('%H:%M:%S') }}</p>
+                <p>Coordinates: {{ lat }}, {{ lng }}</p>
+            </div>
+
+            <nav class="quick-nav">
+                <a href="{{ url_for('attendance_page') }}">⬅️ Back to Dashboard</a>
+                <button onclick="location.reload()" class="btn-select" style="border:none; background:none; cursor:pointer;">🔄 Refresh Location</button>
+            </nav>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map using coordinates from Python/Database
+        var lat = {{ lat }};
+        var lng = {{ lng }};
+        
+        var map = L.map('map').setView([lat, lng], 15);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Add a marker for the van
+        var vanIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/1048/1048314.png', // Van Icon
+            iconSize: [40, 40],
+            iconAnchor: [20, 40]
+        });
+
+        L.marker([lat, lng], {icon: vanIcon}).addTo(map)
+            .bindPopup('<b>College Van</b><br>Currently here.')
+            .openPopup();
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</body>
+</html>

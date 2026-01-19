@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Cab Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="student-theme"> <div class="main-container">
+        <div class="main-container">
+    <div class="header-section">
+        <h1>College Cab Management 🚐</h1>
+        <p class="subtitle">Fast. Reliable. Secure campus travel.</p>
+    </div>
+
+    <div class="portal-grid">
+        <div class="portal-card student-card">
+            <div class="card-content">
+                <h2>Student Portal 🎓</h2>
+                <p>Book slots, mark your attendance, and track your ride in real-time.</p>
+            </div>
+            <div class="btn-group">
+                <a href="{{ url_for('student_login') }}" class="btn-white">Login</a>
+                <a href="{{ url_for('register') }}" class="btn-outline">Register</a>
+            </div>
+        </div>
+
+        <div class="portal-card driver-card">
+            <div class="card-content">
+                <h2>Driver Portal 🛡️</h2>
+                <p>Manage your routes, view passenger lists, and update live location.</p>
+            </div>
+            <div class="btn-group">
+                <a href="{{ url_for('driver_login') }}" class="btn-white">Login</a>
+                <a href="{{ url_for('driver_register') }}" class="btn-outline">Register</a>
+            </div>
+        </div>
+    </div>
+</div>
+    
+
+</body>
+</html>

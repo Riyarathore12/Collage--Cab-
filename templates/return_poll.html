@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Style Poll</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* --- Updated Compact WhatsApp CSS --- */
+/* --- Optimized Mobile WhatsApp UI --- */
+body {
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.poll-container {
+    background: #fff;
+    border-radius: 15px; /* Thoda zyada rounded */
+    padding: 18px 20px;  /* Padding badha di gayi hai readability ke liye */
+    width: 92%;          /* Mobile par ye screen ki width lega */
+    max-width: 450px;    /* Desktop par zyada bada na ho */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+}
+
+.poll-header {
+    font-size: 19px;     /* Heading size badhaya */
+    font-weight: 700;
+    color: #111b21;
+    margin-bottom: 4px;
+}
+
+.poll-subheader {
+    font-size: 13px;
+    color: #667781;
+    margin-bottom: 20px;
+}
+
+.poll-option {
+    margin-bottom: 22px; /* Options ke beech ka gap badhaya taaki click karne mein aasani ho */
+    position: relative;
+    cursor: pointer;
+}
+
+.option-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px; /* Text aur progress bar ke beech ka gap */
+}
+
+.option-time {
+    font-size: 17px;     /* Timing ka size bada kiya */
+    font-weight: 500;
+    color: #111b21;
+    display: flex;
+    align-items: center;
+}
+
+.vote-count {
+    font-size: 15px;
+    font-weight: 500;
+    color: #667781;
+}
+
+.progress-bar {
+    height: 10px;        /* Bar ki thickness badhayi */
+    background: #e9edef;
+    border-radius: 6px;
+    width: 100%;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #25d366; 
+    border-radius: 6px;
+    transition: width 0.5s ease-in-out;
+}
+
+.voters-preview {
+    margin-top: 8px;
+    font-size: 13px;     /* Voter names ka size thoda bada */
+    color: #8696a0;
+}
+
+.voter-tag {
+    background: #f0f2f5;
+    padding: 3px 10px;
+    border-radius: 8px;
+    margin-right: 6px;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+/* Selected state styling */
+.selected .progress-fill {
+    background: #00a884;
+}
+
+.selected .option-time::before {
+    content: "✅";
+    margin-right: 8px;
+    font-size: 14px;
+}
+    </style>
+</head>
+<body style="background-color: #f0f2f5;">
+
+<div class="poll-container">
+    <div class="poll-header">Return 🏃 {{ day_name }}</div>
+    <div class="poll-subheader">
+        <span style="margin-right: 5px;">✅</span> Select one
+    </div>
+
+    {% for opt in options %}
+    <div class="poll-option {% if user_voted_id == opt.id %}selected{% endif %}" onclick="location.href='/vote/{{ opt.id }}'">
+        <div class="option-top">
+            <div class="option-time">
+                <input type="radio" {% if user_voted_id == opt.id %}checked{% endif %} style="margin-right: 10px;">
+                {{ opt.time }}
+            </div>
+            <div class="vote-count">{{ opt.count }}</div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ opt.percent }}%;"></div>
+        </div>
+
+        {% if opt.voters %}
+        <div class="voters-preview">
+            {% for voter in opt.voters[:2] %}
+                <span class="voter-tag">{{ voter.name }}</span>
+            {% endfor %}
+            {% if opt.voters|length > 2 %}
+                <span>+{{ opt.voters|length - 2 }} more</span>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <div style="text-align: center; margin-top: 20px; border-top: 10px solid #e9edef; padding-top: 50px;">
+        <a href="/attendance-page" style="color: #008069; text-decoration: none; font-weight: bold;">View votes</a>
+    </div>
+</div>
+
+</body>
+</html>

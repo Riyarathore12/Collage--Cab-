@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <style>
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .register-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .register-card h2 { color: #4a148c; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-size: 0.8rem; color: #666; margin-bottom: 5px; margin-left: 5px; }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.3s;
+        }
+        .form-group input:focus { border-color: #764ba2; box-shadow: 0 0 8px rgba(118, 75, 162, 0.2); }
+        
+        .loc-section {
+            background: #f3e5f5;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px dashed #7b1fa2;
+        }
+        #loc-btn {
+            background: #7b1fa2;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+        }
+        #reg-btn {
+            background: #ccc;
+            color: #666;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: not-allowed;
+            transition: 0.3s;
+        }
+        .btn-enabled {
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%) !important;
+            color: white !important;
+            cursor: pointer !important;
+            box-shadow: 0 4px 15px rgba(37, 117, 252, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+<div class="register-card">
+    <h2>Student Join 🎓</h2>
+    <form method="POST" action="{{ url_for('register') }}">
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="name" placeholder="Enter your name" required>
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="email@college.com" required>
+        </div>
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text" name="phone" placeholder="10-digit mobile number" required>
+        </div>
+        <div class="form-group">
+   <div class="form-group">
+    <label for="assigned_van_id">Enter Assigned Van Number (e.g., PB01AB1234):</label>
+    <input type="text" name="assigned_van_id" id="assigned_van_id" 
+           class="form-control" placeholder="Enter Van Number" 
+           required style="text-transform: uppercase;">
+    <small>Ask your driver for the exact Van Number.</small>
+</div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Create password" required>
+        </div>
+
+        <div class="loc-section">
+            <p style="font-size: 0.8rem; margin-top: 0;">📍 <b>Home Location</b> is required for the driver to find you.</p>
+            <button type="button" id="loc-btn" onclick="getLocation()">📍 Click to Set My Home</button>
+            <p id="loc-status" style="font-size: 0.7rem; margin-top: 8px; color: #7b1fa2;"></p>
+            <input type="hidden" name="latitude" id="lat">
+            <input type="hidden" name="longitude" id="lng">
+        </div>
+
+        <button type="submit" id="reg-btn" disabled>Create Account</button>
+    </form>
+    <p style="font-size: 0.85rem; margin-top: 15px; color: #666;">
+        Already have an account? <a href="{{ url_for('student_login') }}" style="color: #764ba2; text-decoration: none; font-weight: bold;">Login</a>
+    </p>
+</div>
+
+<script>
+function getLocation() {
+    const status = document.getElementById("loc-status");
+    const regBtn = document.getElementById("reg-btn");
+    const locBtn = document.getElementById("loc-btn");
+
+    if (navigator.geolocation) {
+        status.innerText = "Finding your location... ⏳";
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                document.getElementById("lat").value = position.coords.latitude;
+                document.getElementById("lng").value = position.coords.longitude;
+                status.innerText = "✅ Location Locked! You can now register.";
+                status.style.color = "#2e7d32";
+                locBtn.innerText = "📍 Location Saved";
+                locBtn.style.background = "#2e7d32";
+                
+                // Enable Register Button
+                regBtn.disabled = false;
+                regBtn.classList.add("btn-enabled");
+            },
+            (error) => {
+                status.innerText = "❌ Please enable GPS/Location access.";
+                status.style.color = "#c62828";
+            },
+            { enableHighAccuracy: true }
+        );
+    }
+}
+</script>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</body>
+</html>

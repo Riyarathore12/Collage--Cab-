@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body style="background: #f4f7f6; font-family: sans-serif; margin: 0;">
+    <div style="background: #1a1a2e; color: white; padding: 40px 20px; text-align: center;">
+        <div style="position: relative; width: 100px; height: 100px; margin: 0 auto 15px;">
+            {% if student.profile_pic %}
+                <img src="{{ url_for('static', filename='profile_pics/' + student.profile_pic) }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #25d366;">
+            {% else %}
+                <div style="background: #25d366; width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">
+                    {{ student.name[0] }}
+                </div>
+            {% endif %}
+        </div>
+        <h2 style="margin: 0;">{{ student.name }}</h2>
+    </div>
+
+    <form action="/profile" method="POST" enctype="multipart/form-data" style="padding: 20px; max-width: 400px; margin: auto;">
+        <div style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            
+            <label style="color: #666; font-size: 0.8rem;">Change Profile Photo</label>
+            <input type="file" name="profile_photo" accept="image/*" style="margin-bottom: 20px; font-size: 0.8rem;">
+
+            <label style="color: #666; font-size: 0.8rem;">Full Name</label>
+            <input type="text" name="name" value="{{ student.name }}" required style="width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;">
+
+            <label style="color: #666; font-size: 0.8rem;">Phone Number</label>
+            <input type="text" name="phone" value="{{ student.phone_number }}" required style="width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;">
+
+            <button type="submit" style="width: 100%; background: #128C7E; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; font-size: 1rem;">
+                Save Changes
+            </button>
+        </div>
+        <form action="{{ url_for('profile_page') }}" method="POST" enctype="multipart/form-data">
+    </form>
+</body>
+</html>

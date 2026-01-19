@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body { background-color: #f4f7f6; margin: 0; font-family: 'Segoe UI', sans-serif; }
+        .nav-bar {
+            background: #075e54;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn-settings {
+            background: #f39c12;
+            color: white;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .container { max-width: 500px; margin: 20px auto; padding: 0 15px; }
+        .poll-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        .poll-header { background: #075e54; color: white; padding: 15px; }
+        .poll-body { padding: 15px; }
+        .option-row { margin-bottom: 20px; }
+        .progress-bg { width: 100%; height: 8px; background: #eee; border-radius: 10px; margin-top: 5px; }
+        .progress-fill { height: 100%; background: #25d366; border-radius: 10px; transition: 0.5s; }
+        .alert { padding: 10px; background: #d4edda; color: #155724; border-radius: 5px; text-align: center; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="nav-bar">
+        <span style="font-size: 1.2rem; font-weight: bold;">College Cab</span>
+        <div>
+            <a href="{{ url_for('change_password') }}" class="btn-settings">🔑 Password</a>
+            <a href="{{ url_for('logout') }}" style="color: white; margin-left: 15px; text-decoration: none; font-size: 0.9rem;">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert" style="background-color: {{ '#d4edda' if category == 'success' else '#f8d7da' }};">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <h2 style="text-align: center; color: #075e54;">Van Schedule: {{ date }}</h2>
+
+        {% for poll in polls %}
+        <div class="poll-card">
+            <div class="poll-header">
+                <h4 style="margin: 0; text-transform: capitalize;">{{ poll.type }} Journey 🚐</h4>
+            </div>
+
+            <div class="poll-body">
+                {% for opt in poll.options %}
+                <div class="option-row">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <a href="{{ url_for('vote', option_id=opt.id) }}" style="text-decoration: none; color: #333; font-weight: 600; display: flex; align-items: center;">
+                            <span style="color: {% if poll.user_voted_id == opt.id %}#25d366{% else %}#ccc{% endif %}; font-size: 1.5rem; margin-right: 10px;">
+                                {% if poll.user_voted_id == opt.id %}●{% else %}○{% endif %}
+                            </span> 
+                            {{ opt.time }}
+                        </a>
+                        <span style="font-size: 0.8rem; color: #666;">{{ opt.count }} votes</span>
+                    </div>
+
+                    <div class="progress-bg">
+                        <div class="progress-fill" style="width: {{ opt.percent }}%;"></div>
+                    </div>
+
+                    {% if opt.friends %}
+                    <div style="margin-top: 5px; font-size: 0.75rem; color: #888;">
+                        <span style="color: #3498db;">Friends:</span> {{ opt.friends|join(', ') }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

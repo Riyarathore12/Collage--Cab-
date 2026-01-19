@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Control Center | College Cab</title>
+    <meta http-equiv="refresh" content="30">
+    
+    <style>
+        :root {
+            --dark: #1a1a2e;
+            --whatsapp: #25d366;
+            --late: #ef6c00;
+            --bg: #f4f7f6;
+        }
+
+        body { margin: 0; padding: 0; background-color: var(--bg); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        .header {
+            background: var(--dark);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .poll-card {
+            margin: 15px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .poll-header {
+            background: #075e54;
+            color: white;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slot-container {
+            border-bottom: 2px solid #f0f0f0;
+            padding: 15px;
+        }
+
+        .slot-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .student-row {
+            background: #ffffff;
+            border: 1px solid #eee;
+            padding: 12px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            border-left: 5px solid #ccc;
+        }
+
+        /* Status colors */
+        .border-late { border-left-color: var(--late) !important; background: #fff8f1 !important; }
+        .border-present { border-left-color: var(--whatsapp) !important; }
+
+        .status-pill {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .pill-late { background: #fff3e0; color: var(--late); }
+
+        .call-btn {
+            background: var(--whatsapp);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        @keyframes blink { 50% { opacity: 0.5; } }
+        .nearby-alert { border: 2px solid var(--whatsapp); animation: blink 1s infinite; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h2 style="margin:0;">Driver Dashboard</h2>
+    <span style="opacity: 0.8; font-size: 0.8rem;">📅 {{ date }}</span>
+</div>
+
+<div style="max-width: 600px; margin: auto;">
+    {% for poll in polls %}
+    <div class="poll-card">
+        <div class="poll-header">
+            <h3 style="margin: 0; font-size: 1rem;">{{ poll.type }} Journey</h3>
+            <span style="font-size: 0.7rem; opacity: 0.8;">LIVE</span>
+        </div>
+
+        {% for opt in poll.options %}
+        <div class="slot-container">
+            <div class="slot-info">
+                <span style="font-weight: 800; font-size: 1.1rem; color: var(--dark);">🕒 {{ opt.time }}</span>
+                <span style="font-size: 0.8rem; color: #666;">{{ opt.count }} Booked</span>
+            </div>
+
+            {% if opt.students %}
+                {% for s in opt.students %}
+                <div class="student-row {{ 'border-late' if 'Late' in s.status else 'border-present' if s.status == 'Present' else '' }} {{ 'nearby-alert' if s.is_nearby else '' }}">
+                    
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-weight: 700; color: #333;">{{ s.name }}</span>
+                            
+                            {% if 'Late' in s.status %}
+                                <span class="status-pill pill-late">{{ s.status }}</span>
+                            {% endif %}
+                        </div>
+
+                        {% if s.is_nearby %}
+                            <div style="color: #d32f2f; font-size: 0.7rem; font-weight: bold; margin-top: 3px;">📍 DESTINATION REACHING</div>
+                        {% else %}
+                            <div style="color: #888; font-size: 0.7rem; margin-top: 3px;">
+                                {{ 'Ready for pickup' if s.status == 'Present' else 'Waiting for student...' }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if s.phone %}
+                        <a href="tel:{{ s.phone }}" class="call-btn">📞</a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align: center; color: #ccc; font-size: 0.8rem;">No bookings for this slot</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    // Location tracking logic (Jaise pehle tha)
+    function syncLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                fetch('/update-location', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+                });
+            });
+        }
+    }
+    setInterval(syncLocation, 15000); // 15 sec update
+</script>
+
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Morning Poll - Slot Selection</title>
+    <style>
+        /* --- Mobile-First Responsive CSS --- */
+        body {
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 15px 10px;
+            display: flex;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .poll-container {
+            background: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            width: 92%;          /* Mobile par screen ke corners tak stretch hoga */
+            max-width: 450px;    /* Desktop par zyada bada nahi hoga */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .poll-header {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111b21;
+            margin-bottom: 5px;
+        }
+
+        .poll-subheader {
+            font-size: 14px;
+            color: #667781;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+        }
+
+        .poll-option {
+            margin-bottom: 25px; /* Touch target bada karne ke liye gap badhaya */
+            position: relative;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .option-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .option-time {
+            font-size: 18px;     /* Mobile par clear dikhne ke liye size badhaya */
+            font-weight: 600;
+            color: #111b21;
+            display: flex;
+            align-items: center;
+        }
+
+        .vote-count {
+            font-size: 16px;
+            font-weight: 500;
+            color: #667781;
+        }
+        .progress-bar {
+            height: 12px;        /* Bar ko thoda aur thick kiya */
+            background: #e9edef;
+            border-radius: 6px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #25d366; /* WhatsApp Green */
+            border-radius: 6px;
+            transition: width 0.4s ease-out;
+        }
+        .voters-preview {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .voter-tag {
+            background: #f0f2f5;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #54656f;
+        }
+
+        /* Checkmark for selected option */
+        .selected .progress-fill {
+            background: #00a884;
+        }
+        
+        .selected-icon {
+            color: #00a884;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #e9edef;
+        }
+
+        .footer-link a {
+            color: #008069;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="poll-container">
+    <div class="poll-header">Morning ☀️ {{ day_name }}</div>
+    <div class="poll-subheader">✅ Select one departure time</div>
+
+    {% for opt in options %}
+    <div class="poll-option" onclick="location.href='/vote/{{ opt.id }}'">
+        <div class="option-top">
+            <div class="option-time">
+                {% if user_voted_id == opt.id %}
+                    <span class="selected-icon">✓</span>
+                {% else %}
+                    <span style="display: inline-block; width: 22px; height: 22px; border: 2px solid #adb5bd; border-radius: 50%; margin-right: 10px;"></span>
+                {% endif %}
+                {{ opt.time }}
+            </div>
+            <div class="vote-count">{{ opt.count }}</div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ opt.percent }}%;"></div>
+        </div>
+
+        {% if opt.voters %}
+        <div class="voters-preview">
+            {% for voter in opt.voters[:3] %}
+                <span class="voter-tag">{{ voter.name }}</span>
+            {% endfor %}
+            {% if opt.voters|length > 3 %}
+                <span style="font-size: 12px; color: #667781; align-self: center;">+{{ opt.voters|length - 3 }} more</span>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <div class="footer-link">
+        <a href="/attendance-page">← Back to Dashboard</a>
+    </div>
+</div>
+
+</body>
+</html>

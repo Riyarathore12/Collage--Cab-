@@ -1,0 +1,45 @@
+<body class="driver-theme">
+    <div class="auth-container">
+        <div class="auth-icon">📝</div>
+        <h2>Driver Join</h2>
+        <p class="subtitle">Start your journey with us</p>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div style="color: red; background: #ffe6e6; padding: 10px; border-radius: 5px; margin-bottom: 10px; font-size: 14px;">
+                ⚠️ {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="example@gmail.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>Vehicle Number</label>
+                <input type="text" name="vehicle_no" placeholder="e.g. MP04-1234" required>
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" name="phone" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit" class="btn-submit">Create Account</button>
+        </form>
+        <p class="footer-text">Already a driver? <a href="{{ url_for('driver_login') }}">Login</a></p>
+    </div>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</body>
