@@ -281,6 +281,7 @@ def slot_page():
     student_id = session.get('student_id')
     if not student_id: return redirect(url_for('student_login'))
     
+    create_tomorrow_polls()
     student = Student.query.get(student_id)
     # Student ki apni van ka ID
     my_van_id = student.assigned_van_id 
@@ -288,6 +289,14 @@ def slot_page():
     target_date = get_target_date() 
     morning_poll = Poll.query.filter_by(poll_type="morning", poll_date=target_date).first()
     
+    if not morning_poll:
+        morning_poll = Poll.query.filter_by(
+            poll_type="morning",
+            poll_date=date.today() + timedelta(days=1)
+        ).first()
+    
+    
+
     poll_options = []
     user_voted_id = None
 
@@ -330,9 +339,17 @@ def return_poll(student_id):
     if "student_id" not in session or session["student_id"] != student_id:
         return redirect(url_for('student_login'))
 
+    create_tomorrow_polls()
+
     target_date = get_target_date()
     poll = Poll.query.filter_by(poll_type="return", poll_date=target_date).first()
     
+    if not poll:
+        poll = Poll.query.filter_by(
+            poll_type="return",
+            poll_date=date.today() + timedelta(days=1)
+        ).first()
+
     poll_options = []
     total_votes = 0
     user_voted_id = None
@@ -398,7 +415,7 @@ def driver_login():
 
 @app.route('/driver-ui')
 def driver_ui():
-    target_date = get_target_date()
+    target_date = date.today() + timedelta(days=1)
     formatted_date = target_date.strftime('%A, %d %b %Y')
     
     # 1. 7:45 PM Reset logic call
@@ -406,7 +423,7 @@ def driver_ui():
     
     # 2. Driver ka Van Number session se lein
     driver_van = session.get('van_number')
-    
+    create_tomorrow_polls()
     polls = Poll.query.filter(Poll.poll_date == target_date).all()
     
     if not polls and target_date > date.today():
